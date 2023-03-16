@@ -1,24 +1,61 @@
-class Classes {
-  constructor({ name, video, description, comments = [] }) {
+function videoPlay(id) {
+  const urlSecreta = `https://platziurlsecreta.com/${id}`;
+  console.log("Se esta reproduciendo desde la url:", urlSecreta);
+}
+
+function videoStop(id) {
+  const urlSecreta = `https://platziurlsecreta.com/${id}`;
+  console.log("Se esta pausando la url:", urlSecreta);
+}
+
+export class PlatziClass {
+  constructor({ name, videoID, description, comments = [] }) {
     this.name = name;
-    this.video = video;
+    this.videoID = videoID;
     this.description = description;
     this.comments = comments;
   }
+
+  reproducir() {
+    videoPlay(this.videoID);
+  }
+
+  pausar() {
+    videoStop(this.videoID);
+  }
 }
 
-const CourseClass = new Classes({
+// ------------------------------
+
+const CourseClass = new PlatziClass({
   name: "Abstracción en JavaScript",
-  video: "https://testvideo.com",
+  videoID: "https://testvideo.com",
   description: "Curso de POO en JS",
 });
 
+/*
+ * Metodos privados
+ * Por convencion, los atributos y metodos que no se quiere que se llamen desde afuera
+ * se les agrega _ de prefijo.
+ */
 class Course {
   constructor({ name, comments = [], teacher, classes = [] }) {
-    this.name = name;
+    this._name = name;
     this.teacher = teacher;
     this.classes = classes;
     this.comments = comments;
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  set name(newName) {
+    if (newName === "Curso Malo de Programacion basica") {
+      console.error("Han agregado un nombre no valido.");
+      return;
+    }
+    this._name = newName;
   }
 }
 
@@ -26,6 +63,11 @@ const cursoProgBasica = new Course({
   name: "Curso Gratis de Programación Basica.",
   teacher: "Freddy Vega",
 });
+
+cursoProgBasica.name;
+
+// cursoProgBasica.name = "Curso Malo de Programacion basica";
+
 const cursoDefHtmlCss = new Course({
   name: "Curso Definitivo de Html y CSS.",
   teacher: "Juan David Castro Gallego",
