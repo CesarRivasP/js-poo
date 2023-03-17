@@ -1,3 +1,18 @@
+class Comment {
+  constructor({ content, studentName, studentRole = "estudiantes" }) {
+    this.content = content;
+    this.studentName = studentName;
+    this.studentRole = studentRole;
+    this.likes = 0;
+  }
+
+  publicar() {
+    console.log(`${this.studentName} (${this.studentRole})`);
+    console.log(`${this.likes} likes`);
+    console.log(`${this.content} comentario`);
+  }
+}
+
 function videoPlay(id) {
   const urlSecreta = `https://platziurlsecreta.com/${id}`;
   console.log("Se esta reproduciendo desde la url:", urlSecreta);
@@ -8,7 +23,7 @@ function videoStop(id) {
   console.log("Se esta pausando la url:", urlSecreta);
 }
 
-export class PlatziClass {
+class PlatziClass {
   constructor({ name, videoID, description, comments = [] }) {
     this.name = name;
     this.videoID = videoID;
@@ -39,11 +54,20 @@ const CourseClass = new PlatziClass({
  * se les agrega _ de prefijo.
  */
 class Course {
-  constructor({ name, comments = [], teacher, classes = [] }) {
+  constructor({
+    name,
+    comments = [],
+    teacher,
+    classes = [],
+    isFree = false,
+    lang = "spanish",
+  }) {
     this._name = name;
     this.teacher = teacher;
     this.classes = classes;
     this.comments = comments;
+    this.isFree = isFree;
+    this.lang = lang;
   }
 
   get name() {
@@ -62,6 +86,7 @@ class Course {
 const cursoProgBasica = new Course({
   name: "Curso Gratis de Programación Basica.",
   teacher: "Freddy Vega",
+  isFree: true,
 });
 
 cursoProgBasica.name;
@@ -77,18 +102,21 @@ const cursoPractHtmlCss = new Course({
   name: "Curso Practico de Html y CSS.",
   teacher: "Juan David Castro Gallego",
   classes: [CourseClass],
+  lang: "english",
 });
 const cursoDefUnrealEngine = new Course({
   name: "Curso Definitivo de Unreal Engine.",
 });
 const cursoPractUnrealEngine = new Course({
   name: "Curso Practico de Unreal Engine.",
+  lang: "english",
 });
 const cursoDefSciencData = new Course({
   name: "Curso Definitivo de Science Data.",
 });
 const cursoPractSciencData = new Course({
   name: "Curso Practico de Science Data.",
+  lang: "english",
 });
 
 class LearningPath {
@@ -120,7 +148,8 @@ const escuelaDataScience = new LearningPath({
   courses: [cursoProgBasica, cursoDefSciencData, cursoPractSciencData],
 });
 
-class Student3 {
+// --------- Herencia en JavaScript -----------------
+class Student {
   constructor({
     name,
     email,
@@ -142,9 +171,82 @@ class Student3 {
     this.approvedCourses = approvedCourses;
     this.learningPaths = learningPaths;
   }
+
+  publicarComentario(commentContent) {
+    const comment = new Comment({
+      content: commentContent,
+      studentName: this.name,
+    });
+    comment.publicar();
+  }
 }
 
-const juan2 = new Student3({
+/*
+ * super() permite llamar al constructor de la clase madre de la cual se extiende.
+ */
+class FreeStudent extends Student {
+  constructor(props) {
+    super(props);
+  }
+
+  approvedCourse(newCourse) {
+    if (newCourse.isFree) {
+      this.approvedCourses.push(newCourse);
+    } else {
+      console.warn(
+        `Lo sentimos, ${this.name} solo puedes tomar cursos que esten abiertos.`
+      );
+    }
+  }
+}
+
+class BasicStudent extends Student {
+  constructor(props) {
+    super(props);
+  }
+
+  approvedCourse(newCourse) {
+    if (newCourse.lang !== "en") {
+      this.approvedCourses.push(newCourse);
+    } else {
+      console.warn(
+        `Lo sentimos, ${this.name} solo puedes tomar cursos en ingles`
+      );
+    }
+  }
+}
+
+class ExpertStudent extends Student {
+  constructor(props) {
+    super(props);
+  }
+
+  approvedCourse(newCourse) {
+    this.approvedCourses.push(newCourse);
+  }
+}
+
+class TeacherStudent extends Student {
+  constructor(props) {
+    super(props);
+  }
+
+  approvedCourse(newCourse) {
+    this.approvedCourses.push(newCourse);
+  }
+
+  // Esta clase fue definida en la clase madre Student. Y aqui se sobre escribio.
+  publicarComentario(commentContent) {
+    const comment = new Comment({
+      content: commentContent,
+      studentName: this.name,
+      studentRole: "profesor",
+    });
+    comment.publicar();
+  }
+}
+
+const juan = new FreeStudent({
   name: "Juan",
   username: "juandc",
   email: "juanemail@gmail.com",
@@ -152,7 +254,7 @@ const juan2 = new Student3({
   learningPaths: [escuelaWeb, escuelaVideoJuegos],
 });
 
-const miguel2 = new Student3({
+const miguel = new BasicStudent({
   name: "miguel",
   username: "migueldc",
   email: "miguelemail@gmail.com",
@@ -160,10 +262,18 @@ const miguel2 = new Student3({
   learningPaths: [escuelaVideoJuegos],
 });
 
-const maria2 = new Student3({
+const maria = new ExpertStudent({
   name: "maria",
   username: "mariadc",
   email: "mariaemail@gmail.com",
   instagram: "mariadc",
   learningPaths: [escuelaVideoJuegos, escuelaDataScience],
+});
+
+const freddy = new TeacherStudent({
+  name: "Freddy Vega",
+  username: "freddier",
+  email: "freddier@gmail.com",
+  instagram: "freddier",
+  learningPaths: [],
 });
