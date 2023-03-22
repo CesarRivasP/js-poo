@@ -31,23 +31,34 @@ function createStudent({
     twitter,
     facebook,
     instagram,
-    readName: function () {
+    // Primera forma de proteger nuestras funciones
+    // readName: function () {
+    //   return private["_name"];
+    // },
+    // changeName: function (newName) {
+    //   private["_name"] = newName;
+    // },
+    get name() {
       return private["_name"];
     },
-    changeName: function (newName) {
-      private["_name"] = newName;
+    set name(newName) {
+      if (newName.length > 0) {
+        private["_name"] = newName;
+      } else {
+        console.warn("Tu nombre debe tener al menos 1 caracter");
+      }
     },
   };
 
   // Con esta definicion anulamos el polimorfismo, pero se protegen los metodos.
-  Object.defineProperty(public, "readName", {
-    writable: false,
-    configurable: false,
-  });
-  Object.defineProperty(public, "changeName", {
-    writable: false,
-    configurable: false,
-  });
+  // Object.defineProperty(public, "readName", {
+  //   writable: false,
+  //   configurable: false,
+  // });
+  // Object.defineProperty(public, "changeName", {
+  //   writable: false,
+  //   configurable: false,
+  // });
 
   return public;
 }
@@ -59,5 +70,3 @@ const andres = createStudent({
   instagram: "ae101",
   facebook: "ae101",
 });
-
-// ---- Module pattern y namespaces: propiedades privadas en JavaScript ----
