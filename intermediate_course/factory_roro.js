@@ -3,6 +3,33 @@ function requiredParams(param) {
   throw new Error(`${param} es obligatorio`);
 }
 
+function isArray(subject) {
+  return Array.isArray(subject);
+}
+
+function createLearningPath({ name = requiredParams("name"), courses = [] }) {
+  const private = {
+    _name: name,
+    _courses: courses,
+  };
+  const public = {
+    get name() {
+      return private["_name"];
+    },
+    set name(newName) {
+      if (newName.length > 0) {
+        private["_name"] = newName;
+      } else {
+        console.warn("Tu nombre debe tener al menos 1 caracter");
+      }
+    },
+    get courses() {
+      return private["_courses"];
+    },
+  };
+  return public;
+}
+
 function createStudent({
   name = requiredParams("name"),
   email = requiredParams("email"),
@@ -21,13 +48,13 @@ function createStudent({
    */
   const private = {
     _name: name,
+    _learningPaths: learningPaths,
   };
 
   const public = {
     email,
     age,
     approvedCourses,
-    learningPaths,
     twitter,
     facebook,
     instagram,
@@ -47,6 +74,24 @@ function createStudent({
       } else {
         console.warn("Tu nombre debe tener al menos 1 caracter");
       }
+    },
+    get learningPaths() {
+      return private["_learningPaths"];
+    },
+    set learningPaths(newLP) {
+      if (!newLP.name) {
+        console.warn("Tu lp no tiene nombre");
+        return;
+      }
+      if (!newLP.courses) {
+        console.warn("Tu lp no tiene courses");
+        return;
+      }
+      if (!isArray(newLP.courses)) {
+        console.warn("Tu lp no es una lista de courses");
+        return;
+      }
+      private["_learningPaths"].push(newLP);
     },
   };
 
@@ -70,3 +115,5 @@ const andres = createStudent({
   instagram: "ae101",
   facebook: "ae101",
 });
+
+andres.learningPaths = "Nueva ruta de aprendisaje";
