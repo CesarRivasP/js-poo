@@ -32,12 +32,30 @@ function Student({
   };
   this.approvedCourses = approvedCourses;
 
-  if (isArray(learningPaths)) {
-    this.learningPaths = [];
-    for (learningPathIndex in learningPaths) {
-      if (learningPaths[learningPathIndex] instanceof LearningPath) {
-        this.learningPaths.push(learningPaths[learningPathIndex]);
+  const private = {
+    _learningPaths: [],
+  };
+
+  // Aplicando los namespaces
+  Object.defineProperty(this, "learningPaths", {
+    get: function () {
+      return private["_learningPaths"];
+    },
+    set: function (newLp) {
+      if (newLp instanceof LearningPath) {
+        private["_learningPaths"].push(newLp);
+      } else {
+        console.warn(
+          "No puedes agregar ese Learning Path, porque no es Instancia del Prototype"
+        );
       }
+    },
+  });
+
+  if (isArray(learningPaths)) {
+    for (learningPathIndex in learningPaths) {
+      // Esta instruccion llama al seter
+      this.learningPaths = learningPaths[learningPathIndex];
     }
   }
 }
